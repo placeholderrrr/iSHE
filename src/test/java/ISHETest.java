@@ -17,8 +17,8 @@ public class ISHETest {
     @BeforeClass
     public static void setUp() {
         long keyGenStart = System.currentTimeMillis();
-        parameters = ISHE.keyGen(4096, 160, 160, 128);
-//        parameters = ISHE.keyGen(1024, 80, 80, 30);
+        // parameters = ISHE.keyGen(4096, 160, 160, 128);
+        parameters = ISHE.keyGen(1024, 80, 80, 30);
         long keyGenEnd = System.currentTimeMillis();
 
         long keyGenTime = keyGenEnd - keyGenStart;
@@ -81,4 +81,36 @@ public class ISHETest {
         BigInteger pt = ISHE.decrypt(parameters.secretKey(), parameters.publicParameters(), res);
         assertEquals(BigInteger.valueOf(246), pt);
     }
+
+    @Test
+    public void testPerformanceEncAndDec() {
+        System.out.println("Running testPerformanceEncAndDec...");
+
+        int iterations = 10000;
+        BigInteger plaintext = BigInteger.valueOf(123);
+
+        // 加密性能测试
+        long encStart = System.currentTimeMillis();
+        for (int i = 0; i < iterations; i++) {
+            ISHE.encrypt(parameters.secretKey(), parameters.publicParameters(), plaintext);
+        }
+        long encEnd = System.currentTimeMillis();
+        long encTime = encEnd - encStart;
+        System.out.println("Total encryption time for " + iterations + " iterations: " + encTime + " ms");
+        System.out.println("Average encryption time per operation: " + (double) encTime / iterations + " ms");
+
+        // 解密性能测试
+        // 先加密一次获取密文用于后续的解密测试
+        ISHECiphertext ct = ISHE.encrypt(parameters.secretKey(), parameters.publicParameters(), plaintext);
+
+        long decStart = System.currentTimeMillis();
+        for (int i = 0; i < iterations; i++) {
+            ISHE.decrypt(parameters.secretKey(), parameters.publicParameters(), ct);
+        }
+        long decEnd = System.currentTimeMillis();
+        long decTime = decEnd - decStart;
+        System.out.println("Total decryption time for " + iterations + " iterations: " + decTime + " ms");
+        System.out.println("Average decryption time per operation: " + (double) decTime / iterations + " ms");
+    }
+
 }
