@@ -33,6 +33,15 @@ public class ISHE {
         return new ISHECiphertext(ciphertext, ENCRYPTION_DEFAULT_D);
     }
 
+    public static ISHECiphertext encByPK(ISHEPublicKey pk, ISHEPublicParameters pp, BigInteger message) {
+        BigInteger r1 = new BigInteger(pp.kr(), SECURE_RANDOM);
+        BigInteger r2 = new BigInteger(pp.kr(), SECURE_RANDOM);
+        BigInteger c1 = message.multiply(pk.one().ciphertext());
+        BigInteger c2 = r1.multiply(pk.zero().ciphertext());
+        BigInteger c3 = r2.multiply(pk.zeroPrime().ciphertext());
+        return new ISHECiphertext(c1.add(c2).add(c3).mod(pp.N()), 1);
+    }
+
     public static BigInteger decrypt(ISHESecretKey sk, ISHEPublicParameters pp, ISHECiphertext ct) {
         Objects.requireNonNull(sk, "Secret key cannot be null");
         Objects.requireNonNull(pp, "Public parameters cannot be null");
