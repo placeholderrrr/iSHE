@@ -51,11 +51,15 @@ public class ISHE {
 
         BigInteger modCt = ct.ciphertext().mod(pp.N());
         BigInteger sPowDModInverse = sk.s().pow(ct.d()).modInverse(pp.N());
+        BigInteger test = sPowDModInverse.multiply(sk.s().pow(ct.d())).mod(pp.N());
         BigInteger middleVal = sPowDModInverse.multiply(modCt).mod(pp.N()).mod(sk.p()).mod(sk.L());
         if (middleVal.compareTo(sk.L().divide(BigInteger.TWO)) < 0) {
             return middleVal;
         } else {
-            return sk.L().subtract(middleVal);
+            BigInteger l = sk.L();
+            BigInteger mm = sk.L().subtract(middleVal).mod(pp.N());
+            return middleVal;
+//            return sk.L().subtract(middleVal);
         }
     }
 }

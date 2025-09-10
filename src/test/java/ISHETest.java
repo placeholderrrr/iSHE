@@ -75,6 +75,25 @@ public class ISHETest {
     }
 
     @Test
+    public void testCiphertextMulCipherText1() {
+        ISHECiphertext ct1 = ISHE.encrypt(parameters.secretKey(), parameters.publicParameters(), BigInteger.valueOf(111));
+        ISHECiphertext ct2 = ISHE.encrypt(parameters.secretKey(), parameters.publicParameters(), BigInteger.valueOf(2));
+        ISHECiphertext ct3 = ISHE.encrypt(parameters.secretKey(), parameters.publicParameters(), BigInteger.valueOf(2));
+        ISHECiphertext ct4 = ISHE.encrypt(parameters.secretKey(), parameters.publicParameters(), BigInteger.valueOf(2));
+        ISHECiphertext ct5 = ISHE.encrypt(parameters.secretKey(), parameters.publicParameters(), BigInteger.valueOf(2));
+        ISHECiphertext ct6 = ISHE.encrypt(parameters.secretKey(), parameters.publicParameters(), BigInteger.valueOf(2));
+        ISHECiphertext ct7 = ISHE.encrypt(parameters.secretKey(), parameters.publicParameters(), BigInteger.valueOf(2));
+        ISHECiphertext res = calculator.multiply(ct1, ct2);
+        res = calculator.multiply(res, ct3);
+        res = calculator.multiply(res, ct4);
+        res = calculator.multiply(res, ct5);
+        res = calculator.multiply(res, ct6);
+        res = calculator.multiply(res, ct7);
+        BigInteger pt = ISHE.decrypt(parameters.secretKey(), parameters.publicParameters(), res);
+        assertEquals(BigInteger.valueOf(7104), pt);
+    }
+
+    @Test
     public void testCiphertextMulPlaintext() {
         ISHECiphertext ct1 = ISHE.encrypt(parameters.secretKey(), parameters.publicParameters(), BigInteger.valueOf(123));
         ISHECiphertext res = calculator.multiply(ct1, BigInteger.valueOf(2));
